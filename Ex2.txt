@@ -1,0 +1,65 @@
+Exercise 2: E-commerce Platform Search Function
+
+Step 1: Understand Asymptotic Notation
+
+Big O Notation
+
+1.Big O notation: A mathematical notation that describes the limiting behavior of a function when the argument tends towards a particular value or infinity, used in computer science to classify algorithms according to how their run time or space requirements grow as the input size grows.
+2.Best, Average, and Worst-Case Scenarios:
+    Linear Search: O(n) in all cases.
+    Binary Search: Best - O(1), Average/Worst - O(log n) but requires a sorted array.
+
+Step 2: Setup
+
+1.Create a class for Product with necessary attributes.
+
+Step 3: Implementation
+
+class Product {
+    int productId;
+    String productName;
+    String category;
+
+    public Product(int productId, String productName, String category) {
+        this.productId = productId;
+        this.productName = productName;
+        this.category = category;
+    }
+}
+
+class Search {
+    public Product linearSearch(Product[] products, String productName) {
+        for (Product product : products) {
+            if (product.productName.equals(productName)) {
+                return product;
+            }
+        }
+        return null;
+    }
+
+    public Product binarySearch(Product[] products, String productName) {
+        int left = 0, right = products.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            int result = products[mid].productName.compareTo(productName);
+            if (result == 0) {
+                return products[mid];
+            }
+            if (result < 0) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return null;
+    }
+}
+
+Step 4: Analysis
+
+1.Linear Search: O(n) - Iterates through each element until the desired element is found or the end is reached.
+2.Binary Search: O(log n) - More efficient for sorted arrays, repeatedly dividing the search interval in half.
+
+Suitability
+
+1.Binary search is more suitable for large, sorted datasets due to its logarithmic time complexity.

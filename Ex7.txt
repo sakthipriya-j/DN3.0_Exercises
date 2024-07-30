@@ -1,0 +1,27 @@
+Exercise 7: Financial Forecasting
+
+Step 1: Understand Recursive Algorithms
+
+Recursion
+
+1.Recursion simplifies problems by breaking them into smaller, identical problems. It involves functions calling themselves with modified parameters until a base case is reached.
+
+Step 2: Setup
+
+1.Create a method to calculate future value using recursion.
+
+Step 3: Implementation
+
+public class FinancialForecasting {
+    public double forecastValue(double currentValue, double growthRate, int years) {
+        if (years == 0) {
+            return currentValue;
+        }
+        return forecastValue(currentValue * (1 + growthRate), growthRate, years - 1);
+    }
+}
+
+Step 4: Analysis
+
+1.Time Complexity: O(n) - Linear time complexity, where n is the number of years.
+2.Optimization: Use memoization or iterative approach to avoid excessive recursive calls and stack overflow for large input sizes.

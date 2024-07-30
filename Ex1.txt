@@ -1,0 +1,67 @@
+Exercise 1: Inventory Management System
+
+Step 1: Understand the Problem
+
+1.Importance of Data Structures and Algorithms
+2.Efficient data structures and algorithms are crucial for managing large inventories as they optimize storage, retrieval, and updating of product information. They ensure quick access to                          inventory data, which is vital for operations like stock checks, order fulfillment, and inventory audits.
+
+Suitable Data Structures
+
+1.ArrayList: Suitable for dynamic arrays where the size is not fixed. Good for iterating through elements but slower for insertions/deletions.
+2.HashMap: Ideal for quick lookups, insertions, and deletions by using key-value pairs (e.g., productId as the key).
+
+Step 2: Setup
+
+Create a new project in your preferred programming environment.
+
+Step 3: Implementation
+
+import java.util.HashMap;
+import java.util.Map;
+
+class Product {
+    int productId;
+    String productName;
+    int quantity;
+    double price;
+
+    public Product(int productId, String productName, int quantity, double price) {
+        this.productId = productId;
+        this.productName = productName;
+        this.quantity = quantity;
+        this.price = price;
+    }
+}
+
+class Inventory {
+    private Map<Integer, Product> products = new HashMap<>();
+
+    public void addProduct(Product product) {
+        products.put(product.productId, product);
+    }
+
+    public void updateProduct(int productId, int quantity, double price) {
+        Product product = products.get(productId);
+        if (product != null) {
+            product.quantity = quantity;
+            product.price = price;
+        }
+    }
+
+    public void deleteProduct(int productId) {
+        products.remove(productId);
+    }
+
+    public Product getProduct(int productId) {
+        return products.get(productId);
+    }
+}
+
+
+Step 4: Analysis
+
+1.Add Operation: O(1) - Adding a product is a constant-time operation as it involves inserting into a HashMap.
+2.Update Operation: O(1) - Updating is also constant time as it involves accessing the product by key and modifying its attributes.
+3.Delete Operation: O(1) - Deleting a product is constant time by removing the key from the HashMap.
+Optimization
+4.Using a HashMap is already optimized for the operations mentioned. To further optimize, ensure the HashMap is appropriately sized to minimize rehashing.

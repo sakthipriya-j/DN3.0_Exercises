@@ -1,0 +1,82 @@
+Exercise 4: Employee Management System
+
+Step 1: Understand Array Representation
+
+Arrays
+
+1.Arrays are represented in memory as a contiguous block of elements, allowing constant-time access by index.
+2.Advantages include direct access and efficient use of memory for fixed-size data.
+
+Step 2: Setup
+
+1.Create a class for Employee.
+
+Step 3: Implementation
+
+class Employee {
+    int employeeId;
+    String name;
+    String position;
+    double salary;
+
+    public Employee(int employeeId, String name, String position, double salary) {
+        this.employeeId = employeeId;
+        this.name = name;
+        this.position = position;
+        this.salary = salary;
+    }
+}
+
+class EmployeeManagement {
+    private Employee[] employees;
+    private int size;
+
+    public EmployeeManagement(int capacity) {
+        employees = new Employee[capacity];
+        size = 0;
+    }
+
+    public void addEmployee(Employee employee) {
+        if (size < employees.length) {
+            employees[size++] = employee;
+        }
+    }
+
+    public Employee searchEmployee(int employeeId) {
+        for (int i = 0; i < size; i++) {
+            if (employees[i].employeeId == employeeId) {
+                return employees[i];
+            }
+        }
+        return null;
+    }
+
+    public void traverseEmployees() {
+        for (int i = 0; i < size; i++) {
+            System.out.println(employees[i].name);
+        }
+    }
+
+    public void deleteEmployee(int employeeId) {
+        for (int i = 0; i < size; i++) {
+            if (employees[i].employeeId == employeeId) {
+                employees[i] = employees[size - 1];
+                size--;
+                break;
+            }
+        }
+    }
+}
+
+Step 4: Analysis
+
+1.Add Operation: O(1) if there's space, O(n) if resizing is needed.
+2.Search Operation: O(n) - Linear search.
+3.Traverse Operation: O(n) - Iterating through the array.
+4.Delete Operation: O(n) - Linear search and shifting elements.
+
+Limitations
+
+1.Fixed size, requiring resizing when full.
+2.Inefficient for frequent insertions/deletions.
+3.Use arrays when the size is known and fixed.

@@ -1,0 +1,100 @@
+Exercise 5: Task Management System
+
+Step 1: Understand Linked Lists
+
+Linked Lists
+
+1.Singly Linked List: Each node points to the next node, allowing efficient insertions/deletions.
+2.Doubly Linked List: Nodes point to both next and previous nodes, providing bi-directional traversal.
+
+Step 2: Setup
+
+1.Create a class for Task.
+
+Step 3: Implementation
+
+class Task {
+    int taskId;
+    String taskName;
+    String status;
+
+    public Task(int taskId, String taskName, String status) {
+        this.taskId = taskId;
+        this.taskName = taskName;
+        this.status = status;
+    }
+}
+
+class TaskNode {
+    Task task;
+    TaskNode next;
+
+    public TaskNode(Task task) {
+        this.task = task;
+        this.next = null;
+    }
+}
+
+class TaskManagement {
+    private TaskNode head;
+
+    public void addTask(Task task) {
+        TaskNode newNode = new TaskNode(task);
+        if (head == null) {
+            head = newNode;
+        } else {
+            TaskNode current = head;
+            while (current.next != null) {
+                current = current.next;
+            }
+            current.next = newNode;
+        }
+    }
+
+    public Task searchTask(int taskId) {
+        TaskNode current = head;
+        while (current != null) {
+            if (current.task.taskId == taskId) {
+                return current.task;
+            }
+            current = current.next;
+        }
+        return null;
+    }
+
+    public void traverseTasks() {
+        TaskNode current = head;
+        while (current != null) {
+            System.out.println(current.task.taskName);
+            current = current.next;
+        }
+    }
+
+    public void deleteTask(int taskId) {
+        if (head == null) return;
+        if (head.task.taskId == taskId) {
+            head = head.next;
+            return;
+        }
+        TaskNode current = head;
+        while (current.next != null) {
+            if (current.next.task.taskId == taskId) {
+                current.next = current.next.next;
+                return;
+            }
+            current = current.next;
+        }
+    }
+}
+
+Step 4: Analysis
+
+1.Add Operation: O(n) - Traverses to the end for insertion.
+2.Search Operation: O(n) - Linear search.
+3.Traverse Operation: O(n) - Iterates through the list.
+4.Delete Operation: O(n) - Linear search and pointer adjustment.
+
+Advantages
+
+1.Dynamic size, efficient insertions/deletions.
+2.Suitable for data with frequent insertions/deletions.

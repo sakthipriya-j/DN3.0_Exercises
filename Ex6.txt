@@ -1,0 +1,63 @@
+Exercise 6: Library Management System 
+
+Step 1: Understand Search Algorithms
+
+Search Algorithms
+
+1.Linear Search: O(n) - Checks each element until found.
+2.Binary Search: O(log n) - Efficient for sorted arrays, repeatedly halves the search interval.
+
+Step 2: Setup
+
+1.Create a class for Book.
+
+Step 3: Implementation
+
+class Book {
+    int bookId;
+    String title;
+    String author;
+
+    public Book(int bookId, String title, String author) {
+        this.bookId = bookId;
+        this.title = title;
+        this.author = author;
+    }
+}
+
+class Library {
+    public Book linearSearch(Book[] books, String title) {
+        for (Book book : books) {
+            if (book.title.equals(title)) {
+                return book;
+            }
+        }
+        return null;
+    }
+
+    public Book binarySearch(Book[] books, String title) {
+        int left = 0, right = books.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            int result = books[mid].title.compareTo(title);
+            if (result == 0) {
+                return books[mid];
+            }
+            if (result < 0) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return null;
+    }
+}
+
+Step 4: Analysis
+
+1.Linear Search: O(n) - Iterates through each element until found.
+
+Suitability
+
+1.Use linear search for small, unsorted datasets.
+2.Use binary search for large, sorted datasets.
