@@ -1,0 +1,159 @@
+Exercise 1: Online Bookstore - Setting Up RESTful Services
+Step 1: Setup Spring Boot Project
+Use Spring Initializr to create a new Spring Boot project named BookstoreAPI.
+Add the following dependencies:
+Spring Web
+Spring Boot DevTools
+Lombok
+Step 2: Project Structure
+Familiarize yourself with the generated structure:
+src/main/java for Java classes (controllers, services, etc.)
+src/main/resources for configuration files like application.properties.
+Step 3: What's New in Spring Boot 3
+Spring Boot 3 brings several new features, including:
+Java 17 baseline: Spring Boot 3 requires at least Java 17.
+GraalVM Native Image Support: Native image generation for faster startup.
+New Observability Features: Includes Micrometer tracing and better integration with distributed tracing tools.
+Enhanced Security: Integration with Spring Security 6.
+Performance Improvements: General improvements in the framework for better speed.
+Exercise 2: Online Bookstore - Creating Basic REST Controllers
+Step 1: Create Book Controller
+Define a BookController class with basic request mappings to handle /books endpoints.
+package com.example.bookstoreapi.controller;
+
+import com.example.bookstoreapi.model.Book;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+@RequestMapping("/books")
+public class BookController {
+    private List<Book> books = new ArrayList<>();
+
+    // Implement HTTP methods below
+}
+Step 2: Handle HTTP Methods
+Add methods to handle the different HTTP methods:
+@GetMapping
+public List<Book> getAllBooks() {
+    return books;
+}
+
+@PostMapping
+public Book addBook(@RequestBody Book book) {
+    books.add(book);
+    return book;
+}
+
+@PutMapping("/{id}")
+public Book updateBook(@PathVariable Long id, @RequestBody Book updatedBook) {
+    // Code to update book by id
+}
+
+@DeleteMapping("/{id}")
+public void deleteBook(@PathVariable Long id) {
+    // Code to delete book by id
+}
+Step 3: Return JSON Responses
+Ensure all endpoints return JSON by default.
+Define the Book entity.
+
+package com.example.bookstoreapi.model;
+
+import lombok.Data;
+
+@Data
+public class Book {
+    private Long id;
+    private String title;
+    private String author;
+    private double price;
+    private String isbn;
+}
+Exercise 3: Online Bookstore - Handling Path Variables and Query Parameters
+Step 1: Path Variables
+Implement a method to fetch a book by its ID:
+
+@GetMapping("/{id}")
+public Book getBookById(@PathVariable Long id) {
+    return books.stream().filter(book -> book.getId().equals(id)).findFirst().orElse(null);
+}
+Step 2: Query Parameters
+Implement a method to filter books by title or author using query parameters:
+
+@GetMapping("/search")
+public List<Book> searchBooks(@RequestParam(required = false) String title,
+                              @RequestParam(required = false) String author) {
+    return books.stream()
+                .filter(book -> (title == null || book.getTitle().contains(title)) &&
+                                (author == null || book.getAuthor().contains(author)))
+                .collect(Collectors.toList());
+}
+Exercise 4: Online Bookstore - Processing Request Body and Form Data
+Step 1: Request Body
+Implement a POST endpoint to create a new customer using JSON:
+@PostMapping("/customers")
+public Customer createCustomer(@RequestBody Customer customer) {
+    // Code to save the customer
+}
+Step 2: Form Data
+Create an endpoint to accept form data for customer registration:
+
+@PostMapping("/customers/form")
+public String registerCustomer(@RequestParam String name, @RequestParam String email) {
+    // Process form data
+}
+Exercise 5: Online Bookstore - Customizing Response Status and Headers
+Step 1: Response Status
+Use @ResponseStatus to customize HTTP status codes:
+
+@PostMapping("/books")
+@ResponseStatus(HttpStatus.CREATED)
+public Book createBook(@RequestBody Book book) {
+    books.add(book);
+    return book;
+}
+Step 2: Custom Headers
+Use ResponseEntity to add custom headers:
+@GetMapping("/{id}")
+public ResponseEntity<Book> getBookWithHeaders(@PathVariable Long id) {
+    Book book = books.stream().filter(b -> b.getId().equals(id)).findFirst().orElse(null);
+    return ResponseEntity.ok().header("Custom-Header", "Book-API").body(book);
+}
+Exercise 6: Online Bookstore - Exception Handling in REST Controllers
+Step 1: Global Exception Handler
+Create a GlobalExceptionHandler class with @ControllerAdvice:
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(BookNotFoundException.class)
+    public ResponseEntity<String> handleBookNotFound(BookNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+}
+Exercise 7: Online Bookstore - Introduction to Data Transfer Objects (DTOs)
+Step 1: Create DTOs
+Define BookDTO and CustomerDTO classes.
+@Data
+public class BookDTO {
+    private Long id;
+    private String title;
+    private String author;
+    private double price;
+}
+Step 2: Mapping Entities to DTOs
+Use MapStruct or ModelMapper for mapping.
+Exercise 8: Online Bookstore - Implementing CRUD Operations
+Step 1: CRUD Endpoints
+Implement all CRUD endpoints for both Book and Customer entities.
+Step 2: Input Validation
+Use validation annotations like @NotNull and @Size.
+public class Book {
+    @NotNull
+    private String title;
+
+    @Size(min = 13, max = 13)
+    private String isbn;
+}
