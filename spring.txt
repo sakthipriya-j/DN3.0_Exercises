@@ -1,0 +1,398 @@
+Exercise 1: Configuring a Basic Spring Application
+Step 1: Set Up a Spring Project
+Create a Maven project named LibraryManagement.
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.library</groupId>
+    <artifactId>LibraryManagement</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <!-- Spring Core Dependency -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.10</version>
+        </dependency>
+    </dependencies>
+</project>
+Step 2: Configure the Application Context
+Create an XML configuration file named applicationContext.xml in src/main/resources:
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Bean for BookRepository -->
+    <bean id="bookRepository" class="com.library.repository.BookRepository" />
+
+    <!-- Bean for BookService -->
+    <bean id="bookService" class="com.library.service.BookService">
+        <property name="bookRepository" ref="bookRepository" />
+    </bean>
+</beans>
+Step 3: Define Service and Repository Classes
+Create a package com.library.service and add BookService class:
+
+package com.library.service;
+
+import com.library.repository.BookRepository;
+
+public class BookService {
+    private BookRepository bookRepository;
+
+    public void setBookRepository(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+    }
+
+    public void listBooks() {
+        bookRepository.getBooks().forEach(System.out::println);
+    }
+}
+Create a package com.library.repository and add BookRepository class:
+package com.library.repository;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class BookRepository {
+    public List<String> getBooks() {
+        return Arrays.asList("Book 1", "Book 2", "Book 3");
+    }
+}
+Step 4: Run the Application
+Create a main class LibraryManagementApplication to load the Spring context:
+
+package com.library;
+
+import com.library.service.BookService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class LibraryManagementApplication {
+    public static void main(String[] args) {
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        BookService bookService = context.getBean("bookService", BookService.class);
+        bookService.listBooks();
+    }
+}
+Exercise 2: Implementing Dependency Injection
+Step 1: Modify the XML Configuration
+Update applicationContext.xml:
+<bean id="bookService" class="com.library.service.BookService">
+    <property name="bookRepository" ref="bookRepository" />
+</bean>
+Step 2: Update the BookService Class
+Ensure the BookService class has a setter method for BookRepository.
+Step 3: Test the Configuration
+Run LibraryManagementApplication and verify that BookService is correctly wired with BookRepository.
+Exercise 3: Implementing Logging with Spring AOP
+Step 1: Add Spring AOP Dependency
+Update pom.xml:
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-aop</artifactId>
+    <version>5.3.10</version>
+</dependency>
+Step 2: Create an Aspect for Logging
+Create com.library.aspect.LoggingAspect:
+package com.library.aspect;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+
+public class LoggingAspect {
+
+    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+        long start = System.currentTimeMillis();
+        Object result = joinPoint.proceed();
+        long elapsedTime = System.currentTimeMillis() - start;
+        System.out.println("Method executed in: " + elapsedTime + "ms");
+        return result;
+    }
+}
+Step 3: Enable AspectJ Support
+Update applicationContext.xml:
+<aop:aspectj-autoproxy/>
+<bean id="loggingAspect" class="com.library.aspect.LoggingAspect" />
+Step 4: Test the Aspect
+Run LibraryManagementApplication and observe log messages for method execution times.
+Exercise 4: Creating and Configuring a Maven Project
+Step 1: Create a New Maven Project
+Create LibraryManagement as a new Maven project.
+Step 2: Add Spring Dependencies in pom.xml
+<dependencies>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>5.3.10</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>5.3.10</version>
+    </dependency>
+</dependencies>
+Step 3: Configure Maven Plugins
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+Exercise 5: Configuring the Spring IoC Container
+Step 1: Create Spring Configuration File
+Create an XML configuration file named applicationContext.xml in src/main/resources:
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- BookRepository bean definition -->
+    <bean id="bookRepository" class="com.library.repository.BookRepository" />
+
+    <!-- BookService bean definition with dependency injection -->
+    <bean id="bookService" class="com.library.service.BookService">
+        <property name="bookRepository" ref="bookRepository"/>
+    </bean>
+</beans>
+Step 2: Update the BookService Class
+Ensure that BookService has a setter method for BookRepository:
+package com.library.service;
+
+import com.library.repository.BookRepository;
+
+public class BookService {
+    private BookRepository bookRepository;
+
+    // Setter injection
+    public void setBookRepository(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+    }
+
+    public void displayBooks() {
+        bookRepository.getBooks().forEach(System.out::println);
+    }
+}
+Step 3: Run the Application
+Create a main class to test the configuration:
+
+package com.library;
+
+import com.library.service.BookService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class LibraryManagementApplication {
+    public static void main(String[] args) {
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        BookService bookService = context.getBean("bookService", BookService.class);
+        bookService.displayBooks();
+    }
+}
+Exercise 6: Configuring Beans with Annotations
+Step 1: Enable Component Scanning
+Update applicationContext.xml to include component scanning for the com.library package:
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Enable component scanning -->
+    <context:component-scan base-package="com.library" />
+
+</beans>
+Step 2: Annotate Classes
+Use annotations to define beans instead of XML.
+
+package com.library.service;
+
+import com.library.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class BookService {
+    private BookRepository bookRepository;
+
+    @Autowired
+    public void setBookRepository(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+    }
+
+    public void listBooks() {
+        bookRepository.getBooks().forEach(System.out::println);
+    }
+}
+
+package com.library.repository;
+
+import org.springframework.stereotype.Repository;
+import java.util.Arrays;
+import java.util.List;
+
+@Repository
+public class BookRepository {
+    public List<String> getBooks() {
+        return Arrays.asList("Book 1", "Book 2", "Book 3");
+    }
+}
+Step 3: Test the Configuration
+Run the LibraryManagementApplication and verify the annotation-based configuration works as expected.
+Exercise 7: Implementing Constructor and Setter Injection
+Step 1: Configure Constructor Injection
+Modify the applicationContext.xml to configure constructor injection for BookService.
+<bean id="bookService" class="com.library.service.BookService">
+    <constructor-arg ref="bookRepository" />
+</bean>
+BookService constructor:
+
+@Service
+public class BookService {
+    private final BookRepository bookRepository;
+
+    @Autowired
+    public BookService(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+    }
+
+    public void listBooks() {
+        bookRepository.getBooks().forEach(System.out::println);
+    }
+}
+Step 2: Configure Setter Injection
+Ensure BookService also has a setter method for BookRepository, so it supports both types of injection.
+@Autowired
+public void setBookRepository(BookRepository bookRepository) {
+    this.bookRepository = bookRepository;
+}
+Step 3: Test the Injection
+Run LibraryManagementApplication to verify both constructor and setter injection work correctly.
+Exercise 8: Implementing Basic AOP with Spring
+Step 1: Define an Aspect
+Create an aspect for logging method execution times.
+LoggingAspect:
+
+package com.library.aspect;
+
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.stereotype.Component;
+
+@Aspect
+@Component
+public class LoggingAspect {
+
+    @Pointcut("execution(* com.library.service.BookService.listBooks(..))")
+    public void logBeforeListBooks() {}
+
+    @Before("logBeforeListBooks()")
+    public void logBefore() {
+        System.out.println("LoggingAspect: Before listing books...");
+    }
+
+    @After("logBeforeListBooks()")
+    public void logAfter() {
+        System.out.println("LoggingAspect: After listing books...");
+    }
+}
+Step 2: Create Advice Methods
+Advice methods in the aspect to log actions before and after the execution of listBooks().
+Step 3: Configure the Aspect
+Update the applicationContext.xml to enable AOP and register the aspect.
+<aop:aspectj-autoproxy/>
+<bean id="loggingAspect" class="com.library.aspect.LoggingAspect"/>
+Step 4: Test the Aspect
+Run LibraryManagementApplication to verify the logging aspect works as expected.
+Exercise 9: Creating a Spring Boot Application
+Step 1: Create a Spring Boot Project
+Use Spring Initializr to create a new Spring Boot project named LibraryManagement with dependencies for Spring Web, Spring Data JPA, and H2 Database.
+Step 2: Add Dependencies
+Add Spring Web, Spring Data JPA, and H2 dependencies in pom.xml:
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>runtime</scope>
+</dependency>
+Step 3: Create Application Properties
+Configure database connection in src/main/resources/application.properties:
+properties
+
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=password
+spring.h2.console.enabled=true
+spring.jpa.hibernate.ddl-auto=update
+Step 4: Define Entities and Repositories
+Book entity:
+package com.library.entity;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String title;
+    private String author;
+
+    // Getters and setters
+}
+BookRepository:
+package com.library.repository;
+
+import com.library.entity.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BookRepository extends JpaRepository<Book, Long> {}
+Step 5: Create a REST Controller
+BookController for handling CRUD operations:
+package com.library.controller;
+
+import com.library.entity.Book;
+import com.library.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/books")
+public class BookController {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @GetMapping
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    @PostMapping
+    public Book addBook(@RequestBody Book book) {
+        return bookRepository.save(book);
+    }
+}
+Step 6: Run the Application
+Run the Spring Boot application and test the REST endpoints (e.g., /books).
