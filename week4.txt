@@ -1,0 +1,225 @@
+Exercise 1: Employee Management System - Overview and Setup
+Step 1: Creating a Spring Boot Project
+Use Spring Initializr to create a new Spring Boot project named EmployeeManagementSystem.
+Add the following dependencies:
+Spring Data JPA
+H2 Database
+Spring Web
+Lombok
+Step 2: Configuring Application Properties
+In the src/main/resources/application.properties, configure the H2 database connection as follows:
+properties
+Copy code
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=password
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.h2.console.enabled=true
+spring.jpa.hibernate.ddl-auto=update
+Exercise 2: Employee Management System - Creating Entities
+Step 1: Creating JPA Entities
+Define the Employee and Department entities with appropriate fields.
+Employee Entity:
+
+java
+Copy code
+package com.example.employeemanagement.entity;
+
+import lombok.Getter;
+import lombok.Setter;
+import javax.persistence.*;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "employees")
+public class Employee {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String name;
+    private String email;
+    
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+}
+Department Entity:
+
+package com.example.employeemanagement.entity;
+
+import lombok.Getter;
+import lombok.Setter;
+import javax.persistence.*;
+import java.util.List;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "departments")
+public class Department {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String name;
+    
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
+    private List<Employee> employees;
+}
+Step 2: Mapping Entities to Database Tables
+Use @Entity, @Table, @Id, and @GeneratedValue annotations to map classes to database tables.
+Define a one-to-many relationship between Department and Employee using @OneToMany and @ManyToOne annotations.
+Exercise 3: Employee Management System - Creating Repositories
+Step 1: Overview of Spring Data Repositories
+Spring Data repositories provide CRUD operations, reducing boilerplate code.
+Step 2: Creating Repositories
+Create interfaces for EmployeeRepository and DepartmentRepository, extending JpaRepository.
+EmployeeRepository:
+package com.example.employeemanagement.repository;
+
+import com.example.employeemanagement.entity.Employee;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {}
+DepartmentRepository:
+
+package com.example.employeemanagement.repository;
+
+import com.example.employeemanagement.entity.Department;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface DepartmentRepository extends JpaRepository<Department, Long> {}
+Exercise 4: Employee Management System - Implementing CRUD Operations
+Step 1: Basic CRUD Operations
+Use JpaRepository methods to perform create, read, update, and delete operations.
+Step 2: Implement RESTful Endpoints
+Create controllers to handle CRUD operations for employees and departments.
+EmployeeController:
+
+
+package com.example.employeemanagement.controller;
+
+import com.example.employeemanagement.entity.Employee;
+import com.example.employeemanagement.repository.EmployeeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/employees")
+public class EmployeeController {
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @GetMapping
+    public List<Employee> getAllEmployees() {
+        return employeeRepository.findAll();
+    }
+
+    @PostMapping
+    public Employee createEmployee(@RequestBody Employee employee) {
+        return employeeRepository.save(employee);
+    }
+
+    @PutMapping("/{id}")
+    public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
+        Employee employee = employeeRepository.findById(id).orElseThrow();
+        employee.setName(employeeDetails.getName());
+        employee.setEmail(employeeDetails.getEmail());
+        employee.setDepartment(employeeDetails.getDepartment());
+        return employeeRepository.save(employee);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteEmployee(@PathVariable Long id) {
+        employeeRepository.deleteById(id);
+    }
+}
+DepartmentController:
+
+package com.example.employeemanagement.controller;
+
+import com.example.employeemanagement.entity.Department;
+import com.example.employeemanagement.repository.DepartmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/departments")
+public class DepartmentController {
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    @GetMapping
+    public List<Department> getAllDepartments() {
+        return departmentRepository.findAll();
+    }
+
+    @PostMapping
+    public Department createDepartment(@RequestBody Department department) {
+        return departmentRepository.save(department);
+    }
+}
+Exercise 5: Employee Management System - Defining Query Methods
+Step 1: Defining Query Methods
+Define custom query methods using repository method naming conventions.
+List<Employee> findByDepartmentName(String departmentName);
+Step 2: Named Queries
+Use @NamedQuery to define reusable queries.
+@Entity
+@NamedQuery(name = "Employee.findByEmail", query = "SELECT e FROM Employee e WHERE e.email = ?1")
+public class Employee {
+    //...
+}
+Exercise 6: Employee Management System - Implementing Pagination and Sorting
+Step 1: Pagination
+Add pagination to your employee list.
+Page<Employee> findAll(Pageable pageable);
+Step 2: Sorting
+Add sorting to queries.
+List<Employee> findAllByOrderByNameAsc();
+Combine pagination and sorting.
+Page<Employee> findByDepartmentName(String departmentName, Pageable pageable);
+Exercise 7: Employee Management System - Enabling Entity Auditing
+Step 1: Enable Auditing
+Add auditing annotations in your entities.
+@Entity
+@EntityListeners(AuditingEntityListener.class)
+public class Employee {
+    @CreatedDate
+    private LocalDateTime createdDate;
+
+    @LastModifiedDate
+    private LocalDateTime lastModifiedDate;
+}
+Enable auditing in main application class.
+@EnableJpaAuditing
+@SpringBootApplication
+public class EmployeeManagementSystemApplication {}
+Exercise 8: Employee Management System - Creating Projections
+Step 1: Projections
+Use interface-based or class-based projections to control the fetched data.
+public interface EmployeeProjection {
+    String getName();
+    String getEmail();
+}
+Exercise 9: Employee Management System - Customizing Data Source Configuration
+Step 1: Externalizing Configuration
+Configure multiple data sources in application.properties.
+properties
+
+spring.datasource.url=jdbc:h2:mem:primary
+spring.secondary-datasource.url=jdbc:h2:mem:secondary
+Exercise 10: Employee Management System - Hibernate-Specific Features
+Step 1: Hibernate-Specific Annotations
+Use annotations like @BatchSize for performance optimization.
+Step 2: Batch Processing
+Implement batch processing for bulk updates or inserts.
